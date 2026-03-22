@@ -9,8 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
-const iconModules = import.meta.glob('@/assets/icons/*.svg', { eager: true, import: 'default' }) as Record<string, string>
+const iconModules = import.meta.glob('@/assets/icons/*.png', { eager: true, import: 'default' }) as Record<string, string>
 
 const icons = Object.entries(iconModules).map(([path, src]) => ({
   id: path.replace(/.*\/(\d+)\.svg$/, '$1'),
@@ -36,7 +43,10 @@ function App() {
   const [selectedReason, setSelectedReason] = useState(reasons[0].id)
   const [selectedRequest, setSelectedRequest] = useState(requests[0].id)
   const [text, setText] = useState(`${reasons[0].text}\n${requests[0].text}`)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const exportRef = useRef<HTMLDivElement>(null)
 
   const updateText = (reasonId: string, requestId: string) => {
     const reason = reasons.find((r) => r.id === reasonId)?.text || ''
@@ -54,15 +64,22 @@ function App() {
     updateText(selectedReason, value)
   }
 
-  const handleExport = async () => {
-    if (!cardRef.current) return
-    const canvas = await html2canvas(cardRef.current, {
+  const openConvenienceStoreDialog = async () => {
+    if (!exportRef.current) return
+    const canvas = await html2canvas(exportRef.current, {
       scale: 2,
       backgroundColor: '#ffffff',
+      useCORS: true,
     })
+    setImageUrl(canvas.toDataURL('image/png'))
+    setDialogOpen(true)
+  }
+
+  const downloadImage = () => {
+    if (!imageUrl) return
     const link = document.createElement('a')
     link.download = 'help-tag.png'
-    link.href = canvas.toDataURL('image/png')
+    link.href = imageUrl
     link.click()
   }
 
@@ -99,11 +116,10 @@ function App() {
               <button
                 key={icon.id}
                 onClick={() => setSelectedIcon(icon)}
-                className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 transition-all ${
-                  selectedIcon.id === icon.id
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border hover:border-primary/50'
-                }`}
+                className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 transition-all ${selectedIcon.id === icon.id
+                  ? 'border-primary bg-primary/10'
+                  : 'border-border hover:border-primary/50'
+                  }`}
               >
                 <img src={icon.src} alt="" className="h-9 w-9 object-contain" />
               </button>
@@ -177,14 +193,88 @@ function App() {
         </div>
 
         <div className="flex justify-center gap-3">
-          <Button onClick={handleExport} variant="outline" size="lg">
-            画像として保存
+          <Button onClick={openConvenienceStoreDialog} size="lg">
+            コンビニで印刷
           </Button>
-          <Button onClick={() => handlePrint()} size="lg">
-            印刷
+          <Button onClick={() => handlePrint()} variant="outline" size="lg">
+            自宅で印刷
           </Button>
         </div>
       </div>
+
+      <div
+        ref={exportRef}
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: '-9999px',
+          width: '1050px',
+          height: '1500px',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            width: '673px',
+            height: '1004px',
+            border: '4px solid black',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px' }}>
+            <img src={selectedIcon.src} alt="" style={{ width: '288px', height: '288px', objectFit: 'contain' }} />
+          </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
+            <p style={{ whiteSpace: 'pre-line', textAlign: 'center', fontSize: '48px', fontWeight: 'bold', color: 'black', lineHeight: 1.6 }}>
+              {text}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>コンビニで印刷する</DialogTitle>
+            <DialogDescription asChild>
+              <div className="space-y-4 pt-4">
+                <ol className="list-decimal list-inside space-y-3 text-sm">
+                  <li>
+                    <button
+                      onClick={downloadImage}
+                      className="text-primary underline font-medium"
+                    >
+                      画像を保存
+                    </button>
+                  </li>
+                  <li>
+                    <a
+                      href="https://networkprint.ne.jp/Lite/start"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline font-medium"
+                    >
+                      ネットワークプリントを開く →
+                    </a>
+                  </li>
+                  <li>ファイルを選択 → そのまま登録</li>
+                  <li>発行されたユーザー番号、QRコードで印刷</li>
+                </ol>
+                <p className="text-xs text-muted-foreground">
+                  ※ L判（89mm×127mm）で印刷してください
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
