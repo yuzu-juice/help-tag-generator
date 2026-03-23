@@ -1,0 +1,14 @@
+{
+  "reasons": [
+    { "id": "byouki", "text": "持病があるため" },
+    { "id": "taityou", "text": "体調が悪く" },
+    { "id": "naibu", "text": "内部疾患があるため" },
+    { "id": "seishin", "text": "精神的にしんどく" },
+    { "id": "choukaku", "text": "聴覚障害があるため" },
+    { "id": "kega", "text": "怪我をしているため" }
+  ],
+  "requests": [
+    { "id": "seki", "text": "お席をお譲り頂けないでしょうか" },
+    { "id": "hitsudan", "text": "筆談でご対応頂けないでしょうか" }
+  ]
+}
