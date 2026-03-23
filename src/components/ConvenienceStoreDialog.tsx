@@ -26,10 +26,7 @@ export function ConvenienceStoreDialog({
             <div className="space-y-4 pt-4">
               <ol className="list-decimal list-inside space-y-3 text-sm">
                 <li>
-                  <button
-                    onClick={onDownload}
-                    className="text-primary underline font-medium"
-                  >
+                  <button onClick={onDownload} className="text-primary underline font-medium">
                     画像を保存
                   </button>
                 </li>
@@ -46,9 +43,7 @@ export function ConvenienceStoreDialog({
                 <li>ファイルを選択 → そのまま登録</li>
                 <li>発行されたユーザー番号、QRコードで印刷</li>
               </ol>
-              <p className="text-xs text-muted-foreground">
-                ※ L判（89mm×127mm）で印刷してください
-              </p>
+              <p className="text-xs text-muted-foreground">※ L判（89mm×127mm）で印刷してください</p>
             </div>
           </DialogDescription>
         </DialogHeader>

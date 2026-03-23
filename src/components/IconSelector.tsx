@@ -6,11 +6,7 @@ interface IconSelectorProps {
   onSelect: (icon: Icon) => void
 }
 
-export function IconSelector({
-  icons,
-  selectedIcon,
-  onSelect,
-}: IconSelectorProps) {
+export function IconSelector({ icons, selectedIcon, onSelect }: IconSelectorProps) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">アイコンを選択</label>

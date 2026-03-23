@@ -56,11 +56,7 @@ function App() {
       <div className="mx-auto max-w-md space-y-6">
         <h1 className="text-center text-2xl font-bold">Help Tag Generator</h1>
 
-        <IconSelector
-          icons={icons}
-          selectedIcon={selectedIcon}
-          onSelect={selectIcon}
-        />
+        <IconSelector icons={icons} selectedIcon={selectedIcon} onSelect={selectIcon} />
 
         <div className="space-y-4">
           <TemplateSelector

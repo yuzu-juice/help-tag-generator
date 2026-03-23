@@ -14,12 +14,7 @@ interface TemplateSelectorProps {
   onChange: (value: string) => void
 }
 
-export function TemplateSelector({
-  label,
-  templates,
-  value,
-  onChange,
-}: TemplateSelectorProps) {
+export function TemplateSelector({ label, templates, value, onChange }: TemplateSelectorProps) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>

@@ -6,16 +6,10 @@ export function useTemplates() {
   const reasons: Template[] = templates.reasons
   const requests: Template[] = templates.requests
 
-  const [selectedReason, setSelectedReason] = useState(
-    reasons.length > 0 ? reasons[0].id : ''
-  )
-  const [selectedRequest, setSelectedRequest] = useState(
-    requests.length > 0 ? requests[0].id : ''
-  )
+  const [selectedReason, setSelectedReason] = useState(reasons.length > 0 ? reasons[0].id : '')
+  const [selectedRequest, setSelectedRequest] = useState(requests.length > 0 ? requests[0].id : '')
   const [text, setText] = useState(
-    reasons.length > 0 && requests.length > 0
-      ? `${reasons[0].text}\n${requests[0].text}`
-      : ''
+    reasons.length > 0 && requests.length > 0 ? `${reasons[0].text}\n${requests[0].text}` : ''
   )
 
   const updateText = useCallback(

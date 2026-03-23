@@ -12,9 +12,7 @@ export function useIcons() {
     src,
   }))
 
-  const [selectedIcon, setSelectedIcon] = useState<Icon | null>(
-    icons.length > 0 ? icons[0] : null
-  )
+  const [selectedIcon, setSelectedIcon] = useState<Icon | null>(icons.length > 0 ? icons[0] : null)
 
   const handleSelectIcon = (icon: Icon) => {
     setSelectedIcon(icon)
