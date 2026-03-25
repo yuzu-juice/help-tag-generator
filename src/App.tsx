@@ -1,45 +1,43 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { HelpTagCard } from '@/components/HelpTagCard'
-import { IconSelector } from '@/components/IconSelector'
-import { TemplateSelector } from '@/components/TemplateSelector'
+import { SeekTabContent } from '@/components/SeekTabContent'
+import { OfferTabContent } from '@/components/OfferTabContent'
 import { ConvenienceStoreDialog } from '@/components/ConvenienceStoreDialog'
 import { useIcons } from '@/hooks/useIcons'
-import { useTemplates } from '@/hooks/useTemplates'
+import { useSeekTemplates } from '@/hooks/useSeekTemplates'
+import { useOfferTemplates } from '@/hooks/useOfferTemplates'
 import { exportToLSizeImage, downloadImage } from '@/utils/export'
+import type { HelpType } from '@/types'
 
 const PRINT_PAGE_STYLE = `@page{size:auto;margin:10mm}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}`
 
 function App() {
+  const [helpType, setHelpType] = useState<HelpType>('seek')
   const { icons, selectedIcon, selectIcon } = useIcons()
-  const {
-    reasons,
-    requests,
-    selectedReason,
-    selectedRequest,
-    text,
-    setText,
-    handleReasonChange,
-    handleRequestChange,
-  } = useTemplates()
+  const seek = useSeekTemplates()
+  const offer = useOfferTemplates()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const openConvenienceStoreDialog = async () => {
+  const currentText = helpType === 'seek' ? seek.text : offer.text
+  const currentIconSrc = helpType === 'seek' ? selectedIcon?.src : undefined
+
+  const openConvenienceStoreDialog = useCallback(async () => {
     if (!cardRef.current) return
     const url = await exportToLSizeImage(cardRef.current)
     setImageUrl(url)
     setDialogOpen(true)
-  }
+  }, [])
 
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     if (!imageUrl) return
     downloadImage(imageUrl, 'help-tag.png')
-  }
+  }, [imageUrl])
 
   const handlePrint = useReactToPrint({
     contentRef: cardRef,
@@ -47,47 +45,53 @@ function App() {
     pageStyle: PRINT_PAGE_STYLE,
   })
 
-  if (!selectedIcon) {
-    return <div className="min-h-screen bg-background p-8">アイコンがありません</div>
-  }
-
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="mx-auto max-w-md space-y-6">
         <h1 className="text-center text-2xl font-bold">Help Tag Generator</h1>
 
-        <IconSelector icons={icons} selectedIcon={selectedIcon} onSelect={selectIcon} />
+        <Tabs value={helpType} onValueChange={(v) => setHelpType(v as HelpType)}>
+          <TabsList className="w-full">
+            <TabsTrigger value="seek" className="flex-1">
+              助けを求める
+            </TabsTrigger>
+            <TabsTrigger value="offer" className="flex-1">
+              助けを提供する
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="space-y-4">
-          <TemplateSelector
-            label="理由"
-            templates={reasons}
-            value={selectedReason}
-            onChange={handleReasonChange}
-          />
-          <TemplateSelector
-            label="依頼"
-            templates={requests}
-            value={selectedRequest}
-            onChange={handleRequestChange}
-          />
-        </div>
+          <TabsContent value="seek">
+            <SeekTabContent
+              icons={icons}
+              selectedIcon={selectedIcon}
+              onSelectIcon={selectIcon}
+              reasons={seek.reasons}
+              requests={seek.requests}
+              selectedReasonId={seek.selectedReasonId}
+              selectedRequestId={seek.selectedRequestId}
+              text={seek.text}
+              onReasonChange={seek.handleReasonChange}
+              onRequestChange={seek.handleRequestChange}
+              onTextChange={seek.setText}
+            />
+          </TabsContent>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">テキスト（編集可）</label>
-          <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={3}
-            placeholder="テキストを入力"
-          />
-        </div>
+          <TabsContent value="offer">
+            <OfferTabContent
+              texts={offer.texts}
+              selectedTextId={offer.selectedTextId}
+              text={offer.text}
+              onTextChange={offer.handleTextChange}
+              onCustomTextChange={offer.setText}
+            />
+          </TabsContent>
+        </Tabs>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">プレビュー</label>
           <div className="flex justify-center">
             <div ref={cardRef}>
-              <HelpTagCard iconSrc={selectedIcon.src} text={text} />
+              <HelpTagCard iconSrc={currentIconSrc} text={currentText} />
             </div>
           </div>
         </div>

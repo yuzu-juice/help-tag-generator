@@ -8,7 +8,7 @@ export function useIcons() {
   }) as Record<string, string>
 
   const icons: Icon[] = Object.entries(iconModules).map(([path, src]) => ({
-    id: path.replace(/.*\/(\d+)\.png$/, '$1'),
+    id: Number(path.replace(/.*\/(\d+)\.png$/, '$1')),
     src,
   }))
 

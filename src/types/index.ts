@@ -1,9 +1,11 @@
 export interface Icon {
-  id: string
+  id: number
   src: string
 }
 
 export interface Template {
-  id: string
+  id: number
   text: string
 }
+
+export type HelpType = 'seek' | 'offer'

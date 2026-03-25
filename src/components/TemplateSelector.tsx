@@ -10,21 +10,21 @@ import {
 interface TemplateSelectorProps {
   label: string
   templates: Template[]
-  value: string
-  onChange: (value: string) => void
+  value: number
+  onChange: (value: number) => void
 }
 
 export function TemplateSelector({ label, templates, value, onChange }: TemplateSelectorProps) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={String(value)} onValueChange={(v) => onChange(Number(v))}>
         <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {templates.map((template) => (
-            <SelectItem key={template.id} value={template.id}>
+            <SelectItem key={template.id} value={String(template.id)}>
               {template.text}
             </SelectItem>
           ))}
